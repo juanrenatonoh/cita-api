@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de Cita</title>
+</head>
+<body>
+    <h1>Alta de Cita</h1>
+
+    <!-- Formulario de alta de cita -->
+    <form id="altaCitaForm">
+        <label for="consultorio">Consultorio:</label>
+        <select id="consultorio" required></select><br><br>
+        
+        <label for="doctor">Doctor:</label>
+        <select id="doctor" required></select><br><br>
+
+        <label for="horarioConsulta">Horario de Consulta:</label>
+        <input type="datetime-local" id="horarioConsulta" required><br><br>
+        
+        <label for="nombrePaciente">Nombre del Paciente:</label>
+        <input type="text" id="nombrePaciente" required><br><br>
+        
+        <button type="button" onclick="guardarCita()">Guardar Cita</button>
+    </form>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        // Función para obtener la lista de consultorios desde el backend
+        function obtenerConsultorios() {
+            axios.get('http://localhost:8080/consultorio/')
+                .then(function (response) {
+                    var consultorios = response.data;
+                    var consultorioSelect = document.getElementById("consultorio");
+                    consultorios.forEach(function(consultorio) {
+                        var option = document.createElement("option");
+                        option.text = consultorio.numeroConsultorio;
+                        option.value = consultorio.id;
+                        consultorioSelect.add(option);
+                    });
+                })
+                .catch(function (error) {
+                    console.error("Error al obtener la lista de consultorios:", error);
+                });
+        }
+
+        // Función para obtener la lista de doctores desde el backend
+        function obtenerDoctores() {
+            axios.get('http://localhost:8080/doctor/')
+                .then(function (response) {
+                    var doctores = response.data;
+                    var doctorSelect = document.getElementById("doctor");
+                    doctores.forEach(function(doctor) {
+                        var option = document.createElement("option");
+                        option.text = doctor.nombreCompleto+" "+doctor.apellidoPaterno+" "+doctor.apellidoMaterno;
+                        option.value = doctor.id;
+                        doctorSelect.add(option);
+                    });
+                })
+                .catch(function (error) {
+                    console.error("Error al obtener la lista de doctores:", error);
+                });
+        }
+
+        // Función para guardar la cita
+        function guardarCita() {
+            var consultorio = document.getElementById("consultorio").value;
+            var doctor = document.getElementById("doctor").value;
+            var horarioConsulta = document.getElementById("horarioConsulta").value;
+            var nombrePaciente = document.getElementById("nombrePaciente").value;
+
+            // Construir objeto de cita
+            var cita = {
+                consultorio: consultorio,
+                doctor: doctor,
+                horarioConsulta: horarioConsulta,
+                nombrePaciente: nombrePaciente
+            };
+
+            // Realizar solicitud POST para dar de alta la cita
+            axios.post('http://localhost:8080/citas', cita)
+                .then(function (response) {
+                    alert("Cita guardada exitosamente.");
+                })
+                .catch(function (error) {
+                    alert("Error al guardar la cita.");
+                });
+        }
+
+        // Llamar a las funciones para obtener las listas de consultorios y doctores al cargar la página
+        window.onload = function() {
+            obtenerConsultorios();
+            obtenerDoctores();
+        };
+    </script>
+</body>
+</html>
