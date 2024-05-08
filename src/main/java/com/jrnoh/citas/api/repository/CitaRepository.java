@@ -16,7 +16,7 @@ public interface CitaRepository extends JpaRepository<Cita, Integer>,JpaSpecific
 
     
 
-    List<Cita> findByPacienteAndHorarioConsultaBetween(String paciente, LocalDateTime inicio, LocalDateTime fin);
+//    List<Cita> findByPacienteAndHorarioConsultaBetween(String paciente, LocalDateTime inicio, LocalDateTime fin);
 
     @Query("SELECT COUNT(c) FROM Cita c WHERE c.doctor = ?1 AND c.horarioConsulta BETWEEN ?2 AND ?3")
     long countByDoctorAndHorarioConsultaBetween(String doctor, LocalDateTime inicio, LocalDateTime fin);

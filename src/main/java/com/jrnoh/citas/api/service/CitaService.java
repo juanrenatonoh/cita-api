@@ -63,13 +63,13 @@ public class CitaService {
 
        
 
-        // Consultar si el paciente tiene otra cita en el mismo día con menos de 2 horas de diferencia
-        LocalDateTime horaInicio = cita.getHorarioConsulta().minusHours(2);
-        LocalDateTime horaFin = cita.getHorarioConsulta().plusHours(2);
-        List<Cita> citasDelPacienteEnDia = repository.findByPacienteAndHorarioConsultaBetween(cita.getNombrePaciente(), horaInicio, horaFin);
-        if (!citasDelPacienteEnDia.isEmpty()) {
-        	throw new RuntimeException("El paciente tiene una cita pronto");
-        }
+        // Consultar si el paciente tiene otra cita en el mismo día con menos de 2 horas de diferencia no tenemos un atributo paciente
+//        LocalDateTime horaInicio = cita.getHorarioConsulta().minusHours(2);
+//        LocalDateTime horaFin = cita.getHorarioConsulta().plusHours(2);
+//        List<Cita> citasDelPacienteEnDia = repository.findByPacienteAndHorarioConsultaBetween(cita.getNombrePaciente(), horaInicio, horaFin);
+//        if (!citasDelPacienteEnDia.isEmpty()) {
+//        	throw new RuntimeException("El paciente tiene una cita pronto");
+//        }
 
         // Consultar si el doctor ya tiene 8 citas en el día
         LocalDateTime inicioDia = cita.getHorarioConsulta().toLocalDate().atStartOfDay();
