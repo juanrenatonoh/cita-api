@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Citas</title>
+</head>
+<body>
+    <h1>Consulta de Citas</h1>
+
+    <!-- Formulario de consulta de citas por fecha y consultorio -->
+    <form id="consultaCitasForm">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha">
+        <label for="consultorio">Consultorio:</label>
+        <input type="text" id="consultorio">
+        <button type="button" onclick="consultarCitas()">Consultar</button>
+        
+        <!-- Botón para redirigir a la pantalla de alta de cita -->
+    	<a href="alta"><button type="button">Ir a Alta de Cita</button></a>
+    </form>
+
+    <!-- Resultado de la consulta de citas -->
+    <div id="resultadoConsulta"></div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <script >
+    
+    function consultarCitas() {
+    var fecha = document.getElementById("fecha").value;
+    var consultorio = document.getElementById("consultorio").value;
+
+    // Realizar solicitud GET para obtener citas según la fecha y el consultorio
+    axios.get('http://localhost:8080/cita/', {
+        params: {
+            fecha: fecha,
+            numeroConsultorio: consultorio
+        }
+    })
+    .then(function (response) {
+        // Mostrar las citas obtenidas en el resultado de la consulta
+        var citas = response.data;
+        var resultadoHTML = "<h2>Resultados de la Consulta</h2>";
+        if (citas.length > 0) {
+            resultadoHTML += "<ul>";
+            citas.forEach(function(cita) {
+                resultadoHTML += "<li>" + cita.nombrePaciente + " - " + cita.horarioConsulta + "</li>";
+            });
+            resultadoHTML += "</ul>";
+        } else {
+            resultadoHTML += "<p>No se encontraron citas para la fecha y consultorio especificados.</p>";
+        }
+        document.getElementById("resultadoConsulta").innerHTML = resultadoHTML;
+    })
+    .catch(function (error) {
+        alert("Error al consultar citas.");
+    });
+}
+
+    </script>
+    
+</body>
+</html>
