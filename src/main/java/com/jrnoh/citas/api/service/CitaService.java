@@ -1,5 +1,6 @@
 package com.jrnoh.citas.api.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,8 +55,30 @@ public class CitaService {
 	
 	public void nuevaCita(Cita cita) {
 		
-		
-		
+		// Consultar si ya hay una cita para el mismo consultorio y hora
+        List<Cita> citasEnHoraYConsultorio = repository.findByConsultorioNumeroConsultorioAndHorarioConsulta(cita.getConsultorio().getNumeroConsultorio(), cita.getHorarioConsulta());
+        if (!citasEnHoraYConsultorio.isEmpty()) {
+            throw new RuntimeException("Ya existe una cita para el mismo consultorio y hora ");
+        }
+
+       
+
+        // Consultar si el paciente tiene otra cita en el mismo día con menos de 2 horas de diferencia
+        LocalDateTime horaInicio = cita.getHorarioConsulta().minusHours(2);
+        LocalDateTime horaFin = cita.getHorarioConsulta().plusHours(2);
+        List<Cita> citasDelPacienteEnDia = repository.findByPacienteAndHorarioConsultaBetween(cita.getNombrePaciente(), horaInicio, horaFin);
+        if (!citasDelPacienteEnDia.isEmpty()) {
+        	throw new RuntimeException("El paciente tiene una cita pronto");
+        }
+
+        // Consultar si el doctor ya tiene 8 citas en el día
+        LocalDateTime inicioDia = cita.getHorarioConsulta().toLocalDate().atStartOfDay();
+        LocalDateTime finDia = cita.getHorarioConsulta().toLocalDate().atTime(23, 59);
+        long citasDelDoctorEnDia = repository.countByDoctorAndHorarioConsultaBetween(cita.getDoctor().getNombre(), inicioDia, finDia);
+        if (citasDelDoctorEnDia >= 8) {
+        	throw new RuntimeException("El doctor ya tiene 8 citas");
+        }
+
 		this.repository.save(cita);
 	}
 	
